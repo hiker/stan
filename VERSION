@@ -1,0 +1,7 @@
+version_0_1:  Re-started working on stan
+version_0_2:  - For the first time gasp could be completely parsed
+              - Added a simple database interface to store parsed
+                files.
+              - Added a first real application: "Implicit", which 
+                adds an implicit none plus all necessary declarations
+                to a file.

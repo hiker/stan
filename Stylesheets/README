@@ -1,0 +1,178 @@
+Here a short description on how stylesheets work and how to use them.
+As long as you don't want to write your own stylesheets or implement
+objects which might be handled by a stylesheet, probably only the first 
+section ('Usage') needs to be read.
+
+1) Usage:
+   Create an instance of a stylesheet, than call the ToString() method
+   of this stylesheet to convert the object you want to 'print' to a 
+   string, for example:
+
+   from Grammar.Parser import Parser
+   from Stylesheet.Default import DefaultStylesheet
+
+   oFile  = Parser(sFilename).GetFileObject()
+   ssheet = DefaultStylesheet()
+   print ssheet.ToString(oFile)
+
+   If you prefer you can as well call oFile.ToString(ssheet) (this will
+   in turn call ssheet.ToString(oFile) :) ).
+
+   I thougt it would be useful to hide the stylesheet for simple debug
+   prints, so each object has he __repr__ and __str__ method overwritten
+   to automatically create an instance of DefaultStylesheet and uses this 
+   to convert itself into a string. So, to print an object you can simply do
+   print oFile
+   or 
+   print `oFile`
+   or
+   print "The expression is %s"%oExpression
+   ...
+   (I have to admit I am never sure when __str__ and when __repr__ is called.
+    Yes, it is documented somewhere, I just never bothered to look it up. I
+    usually just call __repr__ in __str__)
+
+   Settings of stylesheets can be modified by using it in a dictionary-like way:
+
+     ssheet['indent']      = 4        # Default indentation for each block
+     ssheet['keywordcase'] = 'upper'  # Convert all keywords to upper case
+     ssheet.ToString(oFile)
+   
+   The valid keywords are currently described in Stylesheet/Default.py. The basic
+   idea is that these values will be set from the user's config file later.
+
+
+2) Implementation:
+   The basic method for stylesheets is 'ToList', which must be implemented for
+   all objects which might be used with a stylesheet. This method must return
+   a list which represents itself. This list should only contain: strings, 
+   AttributeStrings, and lists (which in turn should only contain ....). The
+   hierarchical structure can later be used to find appropriate places to
+   split a line, though this feature is currently not used (and not necessary,
+   it is fine if each objects would return a list of (Attribute)strings only).
+   Example:
+   An expression like   'a+b*c(i)'   might be represented as
+   ['a','+','b','*','c','(','i',')']
+   or
+   ['a','+',['b','*',['c','(','i',')']]]
+   In the first case, the expression might be split as
+      a+b*c
+     > (i)
+   which would be syntactically correct, but not what the user expects. In 
+   the latter representation the line splitting function can make use of the 
+   fact that 'c(i)' is one expression, so it might split the line as
+      a+b*
+     >  c(i)
+   which is better. And similarly it might decide to split the line as
+      a+
+     > b*c(i)
+   depending on implementation. Now the shocking news:
+   currently, the hierarchical information in the lists is not used at 
+   all - as a first step the list is 'flattened'. It is actually not 
+   quite easy to implement a more sophisticated line splitter :((
+
+   If you implement an object which must be able to be used by a 
+   stylesheet, you have to make sure that you call stylesheet.ToList(obj)
+   for every object which is part of 'your' object. For example, consider
+   a parnthesis expression like '(o)', which is stored as a three
+   element list - the first element the '(', the second element the
+   object o, and the last element the ')'. The ToList method of this
+   objects is:
+
+     def ToList(self, stylesheet):
+         return [self.l[0], stylesheet.ToList(self.l[1]), self.l[2]]
+
+   Never call ToString(), since this would remove the hierarchical information
+   contained in the list. Remeber that all the strings in the list are 
+   concatenated without any spaces, so if you need any whitespaces in the 
+   representation of your object, you have to add them, e.g. in the example 
+   above:
+
+     def ToList(self, stylesheet):
+         return [self.l[0], ' ', stylesheet.ToList(self.l[1]), ' ', self.l[2]]
+
+   This would return '( o )'. You probably want to check certain properties
+   of the stylesheet to decide whether to add a space or not, for example
+   (somewhat simplified, since the real sum expression can have more than two
+   elements and 'spacebetweenplus' doesn't exist):
+
+     if stylesheet['spacebetweenplus']:
+        sSpace=' '
+     else
+        sSpace=''
+     return [stylesheet.ToList(self.oFirst), sSpace, self.sPlus, sSpace, 
+	     stylesheet.ToList(self.oSecond)]
+  
+   Or you might want to be more efficient and use:
+
+     if stylesheet['spacebetweenplus']:
+         return [stylesheet.ToList(self.oFirst), sSpace, self.sPlus, sSpace,
+	         stylesheet.ToList(self.oSecond)]
+     else
+         return [stylesheet.ToList(self.oFirst), self.sPlus, 
+	         stylesheet.ToList(self.oSecond)]
+
+   A stylesheet provides some convenient functions for using the correct 
+   capitalisation:
+
+     sKeyword(s) and sVariable(s)
+
+   which use the 'keywordcase' and 'variablecase' properties to choose
+   the correct way of handling a keyword/variable, for example:
+
+     return [stylesheet.sKeyword(self.sIF),' ',
+             stylesheet.ToList(self.oCondition),' ', 
+             stylesheet.sKeyword(self.sThen)]
+
+   It is _important_ that those functions are used and NOT string.upper 
+   (or whatever) function, since string.upper (etc.) will return a new 
+   string, and any attributes attached will be lost. As well, you should 
+   not add a space to a string like:
+
+     stylesheet.sKeyword(self.sIF)+' '
+
+   because there might be attributes (like comments on the previous lines)
+   attached to self.sIf and therefore to the string returned by sKeyword -
+   if you add a space, a new string (without the attached attributes) will
+   be created and the attributes are lost. And in addition the list handling 
+   should be faster (since a string concatenation requires an additional 
+   copy operation) 
+   Yes, I could overwrite the __add__ (or whatever) method of the
+   AttributeString - but that wouldn't solve the problem of
+
+     ' '+self.sThen 
+
+   where self.sThen might have attributes as well. If you really have to do
+   a string operation, check for the actual type and use the sCreateCopy()
+   method of AttributeString:
+
+     if type(s)==str:
+        return "%5s"%s
+     else:
+        return s.sCreateCopy("%5s"%s)
+
+   This way a new AttributeString will create with the new string as
+   value but will all existing attributes.
+
+3) Additional comments to ToString():
+   The list returned by a ToList method are usually simply concatenated via
+   a ''.join(l) call. There are three(??JH??) important exceptions which are
+   handled slighty differently:
+   1) ProgUnit:
+      The list returned by a ProgUnit is a list of statements, and they have
+      to be concatenated with a '\n' in between.
+   2) File:
+      A list returned by a File object is a list of ProgUnits (which in turn
+      is a list of statements). Again handling of the newlines between the
+      statements must be done.
+   3) Statements
+      While they can simply be concatenated, there is a fixed sequence at the
+      beginning of the list where lables and white space for indentation is
+      stored. This is currently:
+      l[0]: a label padded with white spaces or only white spaces to create 
+            the correct amount of indentation for the chosen format
+            (e.g. starting in column 7 for fixed format)
+      l[1]: Spaced used to indent with regards to the program logic
+      Depending on the stylesheet it might make use of this 'header'
+      information.
+ 
