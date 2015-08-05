@@ -31,10 +31,9 @@ class DefaultStylesheet(HasConfig):
         # used anymore.
         self['startcolumn' ] = self['startcolumn'][self["format"]]
         self['maxcols'     ] = self['maxcols'    ][self["format"]]
-        self['keywordcase' ] = self.dCase2Function.get(self['keywordcase' ],
-                                                       lambda x:x)
-        self['variablecase'] = self.dCase2Function.get(self['variablecase'],
-                                                       lambda x:x)
+        self['keywordcase' ] = "upper"
+        self['variablecase'] = "lower"
+
     # -------------------------------------------------------------------------
     def get(self, sKey, default=None):
         return self.dMyConfig.get(sKey, default)
@@ -49,10 +48,10 @@ class DefaultStylesheet(HasConfig):
         sKey=sKey.lower()
         self.dMyConfig[sKey] = value
         if sKey=="keywordcase":
-            self.dMyConfig['keywordcase' ] = self.dCase2Function.get(sKey,
+            self.dMyConfig['keywordcase' ] = self.dCase2Function.get(value,
                                                                      lambda x:x)
         elif sKey=="variablecase":
-            self.dMyConfig['variablecase'] = self.dCase2Function.get(sKey,
+            self.dMyConfig['variablecase'] = self.dCase2Function.get(value,
                                                                      lambda x:x)
     # -------------------------------------------------------------------------
     # Creates the correct capitalisation for a keyword (i.e. upper case, lower
