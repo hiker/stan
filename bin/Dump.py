@@ -53,7 +53,7 @@ class Dump:
         self.sDumpFile   = "%s.dump"%filename
         self.sDumpWriteName = "%s.write%s"%(filename, ext)
         self.sDumpReadName  = "%s.driver%s" %(filename, ext)
-        self.sDumpPrefix = "NECDUMP"
+        self.sDumpPrefix = "DUMP"
         if objFile.sGetFormat()=="fixed":
             self.stylesheet  = f77()
         else:
