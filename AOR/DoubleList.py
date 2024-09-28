@@ -20,21 +20,19 @@ from AOR.AttributeString import AttributeString
 # The object will discover how it is used and handle appending the elements
 # correctly.
 
-from types import StringType, ListType
-
 class DoubleList:
 
     # Constructor. 
     def __init__(self, l1=None, l2=None):
         if l1:
-            if type(l1) is ListType:
+            if type(l1) == type([]):
                 self.l1 = l1
             else:
                 self.l1 = [l1]
         else:
             self.l1 = []
         if l2:
-            if type(l2) is ListType:
+            if type(l2) == type([]):
                 self.l2 = l2
             else:
                 self.l2 = [l2]
@@ -93,7 +91,7 @@ class DoubleList:
         if self.l1[0]:
             stylesheet.ToList(self.l1[0], l)
 
-        #if type(lTemp) is StringType:
+        #if type(lTemp) == type("")
         #    l=[lTemp]
         #else:
         #    l = lTemp
@@ -112,7 +110,7 @@ class DoubleList:
             stylesheet.ToList(self.l2[-1], l)
     # --------------------------------------------------------------------------
     def __repr__(self):
-        return "%sx%s"%(`self.l1`, `self.l2`)
+        return f"{self.l1}x{self.l2}"
     
 # ==============================================================================
 

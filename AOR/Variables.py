@@ -50,7 +50,7 @@ class Variables:
                 return None
     # --------------------------------------------------------------------------
     def GetAttributes(self, sName):
-        return self.dVarsData.get(string.lower(sName), {})
+        return self.dVarsData.get(sName.lower(), {})
     # --------------------------------------------------------------------------
     def lGetAllVariables(self):
         return self.dVarsData.values()
@@ -66,8 +66,8 @@ class Variables:
             for i in 'IJKLMN':
                 self.dImplicit[i] = Type('INTEGER')
         # Now add the 
-        sFrom = string.upper(sFrom[0])
-        sTo   = string.upper(sTo[0]  )
+        sFrom = sFrom[0].upper()
+        sTo   = sTo[0].upper()
         for i in range(ord(sFrom), ord(sTo)+1):
             self.dImplicit[chr(i)] = type
         # We now have to check if any variables have a wrong implicit
@@ -76,10 +76,10 @@ class Variables:
         # no implicit statement is valid).
         for k,v in self.dVarsData.items():
             if v['undefined']:
-                v['type']=self.GetImplicitType(`v`)
+                v['type']=self.GetImplicitType(str(v))
     # --------------------------------------------------------------------------
     def GetImplicitType(self, s):
-        c = string.upper(s[0])
+        c = s[0].upper()
         if self.dImplicit:
             t = self.dImplicit.get(c, None)
             return t
@@ -95,7 +95,7 @@ class Variables:
         # -----------------------------
         sVar="stan_"
         for j in self.lGetAllVariables():
-            if `j`[0:len(sVar)]==sVar:
+            if str(j)[0:len(sVar)]==sVar:
                 break
         else:
             return sVar
@@ -105,7 +105,7 @@ class Variables:
         for i in string.ascii_lowercase:
             sVar="%s_"%i
             for j in self.lGetAllVariables():
-                if `j`[0:2]==sVar:
+                if str(j)[0:2]==sVar:
                     break
             else:
                 return sVar
@@ -121,7 +121,7 @@ class Variables:
                 for i in s2nd:
                     sVar = "%s%s%s_"%(sBase,a,i)
                     for j in self.lGetAllVariables():
-                        if `j`[0:len(sVar)]==sVar:
+                        if str(j)[0:len(sVar)]==sVar:
                             break
                     else:
                         return sVar
@@ -142,6 +142,6 @@ class Variables:
     
 # ==============================================================================
 
-if __name__=="__main__":
-    from AOR.Test.VariablesTest import RunTest
-    RunTest()
+#if __name__=="__main__":
+#    from AOR.Test.VariablesTest import RunTest
+#    RunTest()

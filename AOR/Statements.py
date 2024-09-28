@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 import string
-from   UserList           import UserList
 from   AOR.DoubleList     import DoubleList
 from   AOR.BasicStatement import BasicStatement, BasicRepr
-from   AOR.Expression     import ArraySpecWithName
 
 # ==============================================================================
 # Stores an option string like 'a=b'
@@ -164,7 +162,7 @@ class FunctionCall(BasicRepr):
     # --------------------------------------------------------------------------
     def ToList(self, stylesheet, l):
         if stylesheet["mathsmode"]:
-            s = string.lower(self.sName)
+            s = self.sName.lower()
             if s=="sqrt" and stylesheet["dosqrt"]:
                 return stylesheet.HandleSqrt(self, l)
             if s=="exp" and stylesheet["doexp"]:

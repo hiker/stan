@@ -21,7 +21,7 @@ class Cache:
         if self.dCache.get(oFile.sGetFilename(), None) == None: return
         for i in range(len(self.lCache)):
             if self.lCache[i]==oFile:
-                print "Deleting '%s' from cache"%oFile.sGetFilename()
+                print("Deleting '%s' from cache"%oFile.sGetFilename())
                 del self.lCache[i]
                 del self.dCache[oFile.sGetFilename()]
                 return
@@ -40,17 +40,17 @@ class Cache:
         else:
             # Otherwise put the file into the cache list
             while len(self.lCache)>=self.nSize:
-                print len(self.lCache), self.nSize
+                print(len(self.lCache), self.nSize)
                 nOldLen = len(self.lCache)
                 self.DeleteFile(self.lCache[-1])
                 if nOldLen==len(self.lCache):
-                    print "Deadloch, last entry not removed",nOldLen,len(self.lCache)
-                    print "lCache:"
+                    print("Deadloch, last entry not removed",nOldLen,len(self.lCache))
+                    print("lCache:")
                     for i in self.lCache:
-                        print i.sGetFilename()
-                    print "dCache:"
+                        print(i.sGetFilename())
+                    print("dCache:")
                     for i,j in self.dCache.items():
-                        print i,j.sGetFilename()
+                        print(i,j.sGetFilename())
                     import sys
                     sys.exit(-1)
             self.dCache[sFilename]=oFile
@@ -66,7 +66,7 @@ class Cache:
         if sType=="file":
             oFile = self.dCache.get(sIdentifier, None)
             if oFile!=None:
-                print "Returning %s from cache, moving to front of list"%sIdentifier
+                print("Returning %s from cache, moving to front of list"%sIdentifier)
                 # Well, some overhead here, but easy to implement :)
                 self.DeleteFile(oFile)
                 self.Store(oFile, bNoDBUpdate=1)
@@ -75,8 +75,8 @@ class Cache:
             for oFile in self.lCache:
                 o = oFile.GetIdentifier(sIdentifier, sType)
                 if o:
-                    print "Returning '%s' of type '%s' from cache, moving to front of list"%\
-                          (sIdentifier, sType)
+                    print("Returning '%s' of type '%s' from cache, moving to front of list"%
+                          (sIdentifier, sType))
                     self.DeleteFile(oFile)
                     self.Store(oFile, bNoDBUpdate=1)
                     return o
@@ -88,7 +88,7 @@ class Cache:
                 o = oFile
             else:
                 o = oFile.GetIdentifier(sIdentifier, sType)
-            print "Returning '%s' from database, storing in cache"%sIdentifier
+            print("Returning '%s' from database, storing in cache"%sIdentifier)
             self.DeleteFile(oFile)
             self.Store(oFile, bNoDBUpdate=1)
             return o
@@ -97,4 +97,4 @@ class Cache:
 # ==============================================================================
 
 if __name__=="__main__":
-    print "You can't run Cache directly"
+    print("You can't run Cache directly")

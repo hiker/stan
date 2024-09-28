@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import string
-from   types              import TupleType
 from   AOR.DoubleList     import DoubleList
 from   AOR.BasicStatement import BasicStatement, BasicRepr
 from   AOR.Statements     import Assignment
@@ -25,7 +24,7 @@ class Intent(BasicRepr):
     def __init__(self, sIntent, sParOpen, s, sParClose):
         self.l = [sIntent, sParOpen, s, sParClose]
     # --------------------------------------------------------------------------
-    def GetIntent(self): return string.upper(self.l[2])
+    def GetIntent(self): return self.l[2].upper()
     # --------------------------------------------------------------------------
     def ToList(self, stylesheet, l):
         l.extend(self.l[:])
@@ -591,7 +590,7 @@ class Type(BasicRepr):
         self.lKind  = []
     # --------------------------------------------------------------------------
     def bIsType(self, sType):
-        return string.upper(self.sType)==string.upper(sType)
+        return self.sType.upper()==sType.upper()
     # --------------------------------------------------------------------------
     def SetStar(self, sStar): self.sStar = sStar
     # --------------------------------------------------------------------------
@@ -612,7 +611,7 @@ class Type(BasicRepr):
     # The tuple t is either (keyword,'=',exp) or a single exp obj. This will
     # return a tuple where the keyword is handled by the stylesheet
     def HandleKeywords(self, t, stylesheet, l):
-        if type(t)==TupleType:
+        if type(t)==type(()):
             l.append(stylesheet.sKeyword(t[0]))
             l.append(t[1])
             stylesheet.ToList(t[2], l)

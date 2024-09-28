@@ -76,9 +76,9 @@ class Config:
         try:
             f=open(Config.sConfigFilename,'w')
         except IOError:
-            print "Couldn't open",Config.sConfigFilename
+            print( "Couldn't open",Config.sConfigFilename)
             return
-        f.write(`Config.dConfig`)
+        f.write(str(Config.dConfig))
         f.write("\n")
         f.close()
         

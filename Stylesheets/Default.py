@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import string
-from   types                import ListType, StringType
 from   Tools.Config         import HasConfig
 from   AOR.DoubleList       import DoubleList
 from   Stylesheets.Layout2d import Layout2d, MultiLine2d
@@ -14,10 +13,10 @@ from   Stylesheets.Layout2d import Layout2d, MultiLine2d
 #
 # The following keywords are currently supported:
 class DefaultStylesheet(HasConfig):
-    dCase2Function = {'upper'          : string.upper,
-                      'lower'          : string.lower,
+    dCase2Function = {'upper'          : lambda x: x.upper(),
+                      'lower'          : lambda x: x.lower(),
                       'identical'      : lambda x:x,
-                      'capitalized'    : string.capitalize}
+                      'capitalized'    : lambda x: x.capitalize()}
 
 
     # --------------------------------------------------------------------------
@@ -40,7 +39,7 @@ class DefaultStylesheet(HasConfig):
    # -------------------------------------------------------------------------
     def __getitem__(self, sKey):
         try:
-            return self.dMyConfig[string.lower(sKey)]
+            return self.dMyConfig[sKey.lower()]
         except KeyError:
             return None
     # -------------------------------------------------------------------------
@@ -75,9 +74,9 @@ class DefaultStylesheet(HasConfig):
     # ToList in the object, but by overwriting this method different layout
     # functions can be used.
     def ToList(self, obj, l, bIgnoreAttributes=0):
-        if type(obj)==StringType:
+        if type(obj)==type(""):
             l.append(obj)
-        elif type(obj)==ListType:
+        elif type(obj)==type([]):
             l.append(obj)
         else:
             obj.ToList(self, l)
@@ -106,7 +105,7 @@ class DefaultStylesheet(HasConfig):
         if isinstance(obj, ProgUnit) or obj.__class__==File:
             l = MultiLine2d()
             self.ToList(obj, l, bIgnoreAttributes=bIgnoreAttributes)
-            return `l`
+            return str(l)
         # 3) otherwise, we have (at most) a complete statement, so the
         #    list can be flattened and all strings then concatenated.
         elif isinstance(obj, BasicStatement):
@@ -123,6 +122,6 @@ class DefaultStylesheet(HasConfig):
         # 4) Simple expressions etc., which all go on a single line, no newline
             l = Layout2d()
             self.ToList(obj, l, bIgnoreAttributes=bIgnoreAttributes)
-            return `l`
+            return str(l)
     # -------------------------------------------------------------------------
           

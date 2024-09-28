@@ -188,13 +188,15 @@ class ParseExecution:
             
             # Find the parser function to call for the read keyword
             # -----------------------------------------------------
-            sKeyword = string.upper(tok[1])
+            sKeyword = tok[1].upper()
 
             # First look in the list of end keywords
             # --------------------------------------
             f = dEnd.get(sKeyword, None)
+            print("###",sKeyword, f)
             if f:
-                tok, obj = apply(f, (tok, loc, sLabel, sName))
+                #tok, obj = apply(f, (tok, loc, sLabel, sName))
+                tok, obj = f(tok, loc, sLabel, sName)
                 if obj:
                     self.sub.AppendStatement(obj)
                 self.nIndent = self.nIndent-nIndentModifier
@@ -212,7 +214,8 @@ class ParseExecution:
             #print "keyword",sKeyword, loc, self.sub.bIsExec()
             if f:
                 try:
-                    tok, obj = apply(f, (tok, loc, sLabel, sName) )
+                    #tok, obj = apply(f, (tok, loc, sLabel, sName) )
+                    tok, obj = f(tok, loc, sLabel, sName)
                     if obj:
                         obj.SetEndLocation(self.scanner.GetPreviousLocation())
                     # This is used for parsing if statements (without 'then')
@@ -241,18 +244,18 @@ class ParseExecution:
 #                         tok = self.GetNextToken()
 #                     if not tok: return tok
 #                     tok = self.GetNextToken()
-                except NotYetImplemented, e:
-                    print "==================================================="
-                    print e
-                    print "==================================================="
+                except NotYetImplemented as e:
+                    print("===================================================")
+                    print(e)
+                    print("===================================================")
                     self.nIndent = self.nIndent-nIndentModifier
                     while tok and tok[0]!=Token.tok_SEPARATOR:
                         tok = self.GetNextToken()
                     if not tok: return tok
                     tok = self.GetNextToken()
                 except:
-                    print "Error in'%s'"%self.scanner.GetFileLocation()
-                    print "Line: '%s'"%self.scanner.GetCurrentLine()
+                    print("Error in'%s'"%self.scanner.GetFileLocation())
+                    print("Line: '%s'"%self.scanner.GetCurrentLine())
                     self.bErrorDuringParsing = 1
                     excp, value, tb = sys.exc_info()
                     print_exception(excp, value, tb)
@@ -280,9 +283,9 @@ class ParseExecution:
                                                     self.scanner.GetLocation(),
                                                     sLabel, sName)
                 except ValueError:
-                    print 'Problem with statement',self.scanner.GetFileLocation()
-                    print self.scanner.GetCurrentLine()
-                    print 'This statement is ignored'
+                    print('Problem with statement',self.scanner.GetFileLocation())
+                    print(self.scanner.GetCurrentLine())
+                    print('This statement is ignored')
                     obj = None
                     tok = self.GetBeginOfNextStatement()
 
@@ -564,7 +567,7 @@ class ParseExecution:
             do = ControlLessDo(sLabel, sName, loc, tok[1],
                                sDoLabel, self.nIndent)
             tok = tokNext
-        elif string.upper(tokNext[1])=='WHILE':
+        elif tokNext[1].upper()=='WHILE':
             do = DoWhile(sLabel, sName, loc, tok[1], sDoLabel,
                          sOptComma, tokNext[1], self.GetNextToken()[1],
                          self.nIndent)
@@ -611,7 +614,7 @@ class ParseExecution:
     # else-if-stmt is ELSE IF ( scalar-logical-expr ) THEN [ if-construct-name ]
     # else-stmt	   is ELSE [ if-construct-name ]
     def ParseElseOrElseIf(self, tok, loc=None, sLabel=None, sName=None):
-        if string.upper(tok[1])=="ELSEIF":
+        if tok[1].upper()=="ELSEIF":
             if isinstance(tok[1], AttributeString):
                 sElse, sIf = tok[1].tSplitString(4)
             else:
@@ -620,7 +623,7 @@ class ParseExecution:
         else:
             sElse=tok[1]
             tokNext = self.GetNextToken()
-            if string.upper(tokNext[1])=="IF":
+            if tokNext[1].upper()=="IF":
                 sIf = tokNext[1]
             else:
                 self.scanner.UnGet(tokNext)
@@ -634,7 +637,7 @@ class ParseExecution:
             obj.AddExpr(tokParOpen[1], expr, tokParClose[1])
             assert tokParClose[1]==")"
             tok = self.GetNextToken()
-            assert string.upper(tok[1])=="THEN"
+            assert tok[1].upper()=="THEN"
             obj.SetThen(tok[1])
             
         else:
@@ -654,7 +657,7 @@ class ParseExecution:
     # newline).
     def ParseEndDo(self, keywordtoken, loc=None, sLabel=None, sName=None):
         sEnd, sDo = self.tKeywordSplit(keywordtoken, "ENDDO", 3)
-        assert string.upper(sDo)=="DO"
+        assert sDo.upper()=="DO"
         enddo = EndDo(sLabel, loc, sEnd=sEnd, sDo=sDo, nIndent=self.nIndent-1)
         tok = self.GetNextToken()
 
@@ -668,7 +671,7 @@ class ParseExecution:
     # end-if-stmt is END IF [ if-construct-name ]
     def ParseEndOrEndif(self, tok, loc=None, sLabel=None, sName=None):
         sEnd, sIf = self.tKeywordSplit(tok, "ENDIF",3)
-        assert string.upper(sIf)=="IF"
+        assert sIf.upper()=="IF"
         endif = EndIf(sLabel, loc, sEnd=sEnd, sIf=sIf, nIndent=self.nIndent-1)
         tok   = self.GetNextToken()
         if tok[0]!=Token.tok_SEPARATOR:
@@ -743,7 +746,7 @@ class ParseExecution:
 
     def ParseGoto(self, tok, loc=None, sLabel=None, sName=None):
         sGo, sTo = self.tKeywordSplit(tok, "GOTO", 2)
-        assert string.upper(sTo)=="TO"
+        assert sTo.upper()=="TO"
         tok = self.GetNextToken()
         
         # Computed goto
@@ -820,7 +823,7 @@ class ParseExecution:
                     tok = tokNext
             return self.GetNextToken(), arithIf
                     
-        if string.upper(tok[1])!="THEN":                   # if-stmt
+        if tok[1].upper()!="THEN":                   # if-stmt
             tok, statement = self.ParseStatements(tok, bOnlyOneStatement=1,
                                                   nIndentModifier=1)
             ifonly = IfOnly(sLabel, loc, tokIf[1], tokParOpen[1], ifcond,
@@ -1100,7 +1103,7 @@ class ParseExecution:
     # as two words, the next token (which must be the second part of the
     # keyword) will be read and returned as well.
     def tKeywordSplit(self, tok, sCombinedName, n):
-        sKeyword = string.upper(tok[1])
+        sKeyword = tok[1].upper()
         if sKeyword==sCombinedName:
             if isinstance(tok[1],AttributeString):
                 s1, s2 = tok[1].tSplitString(n) # split combined keywords
@@ -1124,7 +1127,7 @@ class ParseExecution:
 
         # First loop: parse the variables to allocate
         while tok[1]!=")":
-            sKey = string.upper(tok[1])
+            sKey = tok[1].upper()
             if sKey in lKeys: break
             tok, obj = self.ParseExpression(tok)
             if tok[1]==',':

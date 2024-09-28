@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from types               import StringType
 from AOR.AttributeString import AttributeString
 
 class Layout2d:
@@ -39,8 +38,8 @@ class Layout2d:
     # --------------------------------------------------------------------------
     def __ToString(self, l, xPos, yPos):
         for i in range(len(self.lElements)):
-            nX = self.lPosX[i]+xPos
-            nY = self.lPosY[i]+yPos
+            nX = int(self.lPosX[i]+xPos)
+            nY = int(self.lPosY[i]+yPos)
             if isinstance(self.lElements[i], Layout2d):
                 self.lElements[i].__ToString(l, nX, nY)
             else:
@@ -91,7 +90,7 @@ class Layout2d:
     def append(self, o, attribute=None, nIndent = 0, nIndentNext=0):
         self.lElements.append(o)
         self.lPosX.append(self.nWidth+nIndent)
-        #print "adding",o,self.nWidth, o, nIndent, nIndentNext, self.lElements, self.lPosX
+        #print( "adding",o,self.nWidth, o, nIndent, nIndentNext, self.lElements, self.lPosX
         self.nWidth = self.nWidth + len(o) + nIndent+nIndentNext
         
         if attribute!=None:
@@ -200,7 +199,7 @@ class Sqrt2d(Layout2d):
         else:
             l     = [sLine]+["|"]*(self.nHeight-2)+["\ |","\|"]
             lPosX = [2]    +[2  ]*(self.nHeight-2)+[0    ,1   ]
-            lPosY = range(self.nHeight+1)
+            lPosY = [i for i in range(self.nHeight+1)]
             dx    = 4
 
         self.MoveDown(1)
@@ -253,7 +252,7 @@ class MultiLine2d(Layout2d):
         self.lElements.append(o)
         self.lPosX.append(0)
         self.lPosY.append(self.nHeight)
-        if type(o) is StringType or type(o) is AttributeString:
+        if type(o) == type("") or type(o) is AttributeString:
             self.nHeight = self.nHeight + 1
         else:
             self.nHeight = self.nHeight + o.nHeight
@@ -272,27 +271,27 @@ if __name__=="__main__":
     p = Exp2d()
     p.append(l)
     p.power(l)
-    print p
+    print(p)
     import sys
     sys.exit()
     l.over("z")
-    print l
-    print "+"*30
+    print(l)
+    print("+"*30)
     ls = Sqrt2d("a")
     lexp = Exp2d(ls)
-    print lexp
-    print "+"*30
+    print(lexp)
+    print("+"*30)
     l.append(" + ")
     l.append(lexp)
     l2 = Sqrt2d()
     l2.append("a + ")
     l2.append(l)
-    print l2
-    print "+"*30
+    print(l2)
+    print("+"*30)
     l2.sqrt()
-    print l2
-    print "+"*30
+    print(l2)
+    print("+"*30)
     l3=Layout2d("x + ")
     l3.append(l2)
-    print l3
-    print "+"*30
+    print(l3)
+    print("+"*30)

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import string
-from   types                import TupleType, StringType, ListType
 from   AOR.BasicStatement   import BasicRepr
 from   AOR.DoubleList       import DoubleList
 from   AOR.AttributeString  import AttributeString
@@ -201,7 +199,7 @@ class ArraySpec(BasicRepr):
     # --------------------------------------------------------------------------
     def tGetDimension(self, n):
         o = self.lExpr[n]
-        print "o=",o,o.__class__
+        print("o=",o,o.__class__)
     # --------------------------------------------------------------------------
     # Returns a list of all variables used in this array declaration
     def GetAllUsedVariables(self):

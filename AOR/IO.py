@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-import string
-from   types              import StringType, IntType
 from   AOR.DoubleList     import DoubleList
 from   AOR.BasicStatement import BasicStatement, BasicRepr
 
@@ -69,7 +67,8 @@ class BasicIOList(BasicStatement):
     def SetParClose(self, sParClose=')'): self.sParClose = sParClose
     # --------------------------------------------------------------------------
     def AddIOOpt(self, exp, sComma=None):
-        if type(exp)==type(1): exp=`exp`
+        if type(exp)==type(1):
+            exp=str(exp)
         self.lParams.append(exp, sComma)
     # --------------------------------------------------------------------------
     def sGetParClose(self): return self.sParClose
@@ -138,10 +137,10 @@ class Print(BasicStatement):
     def ToList(self, stylesheet, l):
         BasicStatement.ToList(self, stylesheet, l)
         l.append(stylesheet.sKeyword(self.sPrint),nIndentNext=1)
-        if type(self.format)==StringType:
+        if type(self.format)==type(""):
             l.append(self.format)
-        elif type(self.format)==IntType:
-            l.append(`self.format`)
+        elif type(self.format)==type(1):
+            l.append(str(self.format))
         else:
             stylesheet.ToList(self.format, l)
         if not self.sComma: return 
@@ -205,7 +204,8 @@ class Read(BasicIOList):
         # To simplify manually creating statements, a comma is automatically
         # added, if only expressions are specified here (except for the first
         # call).
-        if type(exp)==type(1): exp=`exp`
+        if type(exp)==type(1):
+            exp=str(exp)
         if sComma==None and \
                len(self.lIOExp.lGetSecondaryList())==len(self.lIOExp)-1:
             self.lIOExp.append(",", exp)

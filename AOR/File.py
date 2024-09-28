@@ -3,7 +3,6 @@
 # Stores the information in a Fortran file
 
 import string
-from   UserList            import UserList
 
 from   Tools.Error         import FatalError
 from   AOR.Subroutine      import Subroutine
@@ -16,7 +15,7 @@ from   Stylesheets.Default import DefaultStylesheet
 
 # The order of base clases is important, because BasicRepr's __repr__ 
 # method must be called.
-class File(BasicRepr, UserList):
+class File(BasicRepr, list):
 
     # Constructor for File object. Parameters:
     #
@@ -26,7 +25,7 @@ class File(BasicRepr, UserList):
     #
     def __init__(self, sFilename, sFormat):
         # The list stores all information contained in the file
-        UserList.__init__(self)
+        list.__init__(self)
         self.sFilename  = sFilename
         self.sFormat    = sFormat
         self.stylesheet = None

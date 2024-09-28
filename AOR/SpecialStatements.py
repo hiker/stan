@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from UserString         import UserString
-
 from AOR.Location       import Location
 from AOR.BasicStatement import BasicStatement
 
@@ -15,10 +13,10 @@ from AOR.BasicStatement import BasicStatement
 # everything here on UserString :(((
 
 # A simple base class for all non-statement lines like Comment, Directives, ...
-class BasicNonStatement(BasicStatement, UserString):
+class BasicNonStatement(BasicStatement, str):
     def __init__(self, sComment, loc):
         BasicStatement.__init__(self, None, loc)
-        UserString.__init__(self, sComment)
+        str.__init__(self, sComment)
     # --------------------------------------------------------------------------
     def isStatement(self): return 0
     # --------------------------------------------------------------------------
@@ -30,7 +28,7 @@ class BasicNonStatement(BasicStatement, UserString):
         # First "" is for label, second for correct indentation
         l.extend(["","",self.__repr__()])
     # --------------------------------------------------------------------------
-    def __repr__(self): return UserString.__str__(self)
+    def __repr__(self): return str.__str__(self)
 # ==============================================================================
 # Stores a comment at the end of a line
 class Comment(BasicNonStatement):

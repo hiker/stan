@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import re
-from   string                import expandtabs,rstrip,lstrip,strip, upper
 from   Token                 import Token, Token2Name
 from   AOR.AttributeString   import AttributeString
 from   AOR.SpecialStatements import Comment, ContMarker, CommentLine
@@ -137,8 +136,8 @@ class Scanner(Token):
     
     fName = self.project.FindFile(sFilename)
     if not fName:
-      print 'include file "%s" not found'%sFilename
-      print '(this error can be ignored)'
+      print('include file "%s" not found'%sFilename)
+      print('(this error can be ignored)')
       return 0
     
     self.includescanner = ScannerFactory(fName)
@@ -246,20 +245,20 @@ class Scanner(Token):
       i = i+1
       line_num = i+1
       # untangle tab stops right upfront
-      line = expandtabs(rstrip(text[i]))
+      line = text[i].rstrip().expandtabs()
 
 
       
       # catch compiler directives
       if self.re_directive.match(line):
-        col_num = len(line)-len(lstrip(line)) + 1
+        col_num = len(line)-len(line.lstrip()) + 1
         self.AppendToken(line_num, col_num, self.tok_DIRECTIVE, line)
         self.AppendToken(line_num, len(line), self.tok_SEPARATOR, "")
         continue
 
       # catch other comment lines (which includes empty lines)
       if line.strip()=='' or self.re_commentline.match(line):
-        col_num = len(line)-len(lstrip(line)) + 1
+        col_num = len(line)-len(line.lstrip()) + 1
         if line_type!=self.NEW_STATEMENT:
           self.AppendAttribute(CommentLine(line))
         else:
@@ -271,10 +270,10 @@ class Scanner(Token):
       if self.re_cppline.match(line):
         g=self.re_cppinclude.match(line)
         if g:
-          col_num = len(line)-len(lstrip(line)) + 1
+          col_num = len(line)-len(line.lstrip()) + 1
           self.AppendIncludeToken(line_num, col_num, g.group(1))
-        col_num = len(line)-len(lstrip(line)) + 1
-        self.AppendToken(line_num, col_num, self.tok_PREDIRECTIVE, lstrip(line))
+        col_num = len(line)-len(line.lstrip()) + 1
+        self.AppendToken(line_num, col_num, self.tok_PREDIRECTIVE, line.lstrip())
         self.AppendToken(line_num, len(line), self.tok_SEPARATOR, "")
         continue
 
@@ -333,7 +332,7 @@ class Scanner(Token):
 
       for j in range(len(everything)):
           space_len  = len(spacing[j])
-          space_text = lstrip(spacing[j])
+          space_text = spacing[j].lstrip()
           if space_text!='':
               # we have found something we don't understand!
               col_num = col_num+(space_len-len(space_text))
@@ -688,7 +687,7 @@ class FreeformScanner(Scanner):
     if next==self.NEW_STATEMENT:
       labelmatch = self.re_label.match(line)
       if labelmatch:
-        text = lstrip(labelmatch.group())
+        text = labelmatch.group().lstrip()
         col_num = col_num + labelmatch.end()-len(text)
         self.AppendToken(line_num, col_num, self.tok_LABEL, rstrip(text))
         line = line[labelmatch.end():]
@@ -701,9 +700,9 @@ class FreeformScanner(Scanner):
     #if next!=self.NEW_STATEMENT:
     contmatch = self.re_contmark.match(line)
     if contmatch:
-      text = lstrip(contmatch.group())
+      text = contmatch.group().lstrip*()
       self.AppendAttribute( ContMarker(text, (line_num, col_num)) )
-      line = lstrip(line)[1:]
+      line = line.lstrip()[1:]
     return line
 
   # ---------------------------------------------------------------------------
@@ -779,7 +778,7 @@ class FixedformScanner(Scanner):
     # in fixed format the first 5 cols may hold a label
     labelmatch = self.re_label.match(line[:5])
     if labelmatch:
-      text = lstrip(labelmatch.group())
+      text = labelmatch.group().lstrip()
       col_num = col_num + labelmatch.end()-len(text)
       self.AppendToken(line_num, col_num, self.tok_LABEL, rstrip(text))
       line = line[5:]

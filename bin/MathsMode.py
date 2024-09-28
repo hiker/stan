@@ -111,7 +111,7 @@ class MathsMode(DefaultStylesheet):
         l2d.append(" ")
     # --------------------------------------------------------------------------
     def SplitIntoLines(self, l2d, bIgnoreAttributes=None):
-        #print "Splitting",l2d,len(l2d),self["maxcols"]
+        #print( "Splitting",l2d,len(l2d),self["maxcols"])
         if isinstance(l2d, Layout2d) and len(l2d)>=self["maxcols"]:
             l2d.sSplitIntoLines(self["maxcols"])
         else:
@@ -134,5 +134,6 @@ if __name__=="__main__":
     ssheet  = MathsMode()
     for i in sys.argv[1:]:
         o = project.oGetObjectForIdentifier(i, "file")
-        print ssheet.ToString(o)
+        print("o=", o)
+        print(ssheet.ToString(o))
     

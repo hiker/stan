@@ -52,6 +52,7 @@ class Project:
     # is related to the filename, but in the worst case we might have to
     # grep through all (not yet parsed) files to find the one.
     def lGetFilelistForIdentifier(self, sIdentifier, sType):
+        print("X1", sType, sIdentifier)
         if sType=="file":
             return [self.FindFile(sIdentifier)]
         
@@ -77,13 +78,16 @@ class Project:
         
     # --------------------------------------------------------------------------
     def oGetObjectForIdentifier(self, sIdentifier, sType):
+        print("ID", sIdentifier)
         obj=self.Cache.oGetFile(sIdentifier, sType)
         if obj:
             return obj
         for sFilename in self.lGetFilelistForIdentifier(sIdentifier, sType):
+            print(sFilename)
             if not self.dRecursiveTest.get(sFilename,None):
                 self.dRecursiveTest[sFilename]=1
                 objFile = Parser(sFilename=sFilename, project=self)
+                print("OBJ", objFile)
                 # When a parsing error occurs, none is returned
                 if objFile:
                     self.Cache.Store(objFile)

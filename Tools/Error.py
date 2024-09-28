@@ -2,7 +2,7 @@
 
 # Different error classes
 
-class Error:
+class Error(BaseException):
     def __init__(self, sErrorMessage):
         self.sErrorMessage = sErrorMessage
     # ----------------------------------------------------
@@ -16,17 +16,17 @@ class Error:
 class FatalError(Error):
     pass
 # ========================================================
-class Warning:
+class Warning(BaseException):
     def __init__(self, sWarningMessage):
         self.sWarningMessage = sWarningMessage
     # ----------------------------------------------------
     def sGetError(self):
-        return `self`
+        return str(self)
     # ----------------------------------------------------
     def __repr__(self): return self.sWarningMessage
     # ----------------------------------------------------
     def __str__(self):
-        return `self`
+        return self.sWarningMessage
 # ========================================================
 
 class NotYetImplemented(Warning):

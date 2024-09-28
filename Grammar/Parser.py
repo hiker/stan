@@ -72,7 +72,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
             self.scanner = ScannerFactory(name=sFilename, format=sFormat,
                                           project=project)
         else:
-            if sInput: lInputLines = string.split(sInput,"\n")
+            if sInput: lInputLines = sInput.split("\n")
             if lInputLines:
                 self.scanner = ScannerFactory(lines=lInputLines,
                                               format=sFormat)
@@ -89,8 +89,8 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         # on level 0, declaration and all 'top level' executable statements are
         # on level 1. Statements within blocks (if, do, ...) have the next higher
         # level. It is the task of the output formatter to match the logical
-        # level to physical levels: e.g. a user might want to have program unig
-        # statements, specifiation, and 'top level' executable statements with
+        # level to physical levels: e.g. a user might want to have program unit
+        # statements, specification, and 'top level' executable statements with
         # the same indentation:
         # subroutine test()        or  subroutine test()
         # integer i                      integer i
@@ -109,8 +109,8 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
                             sFormat=self.scanner.GetFormat()     )
         try:
             self.ParseFile(self.GetNextToken())
-        except NotYetImplemented, w:
-            print `w`
+        except NotYetImplemented as w:
+            print(w)
 
         if self.bErrorDuringParsing:
             self.oFile=None
@@ -132,6 +132,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         stack=[]
         
         while tok:
+            print("TOK is", tok)
             if tok[0]==Token.tok_COMMENTLINE or \
                tok[0]==Token.tok_DIRECTIVE   or \
                tok[0]==Token.tok_PREDIRECTIVE:
@@ -140,7 +141,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
                 assert tok[0]==Token.tok_SEPARATOR
                 tok=self.GetNextToken()
                 continue
-            s = string.upper(tok[1])
+            s = tok[1].upper()
             f = self.dKeyword2Func.get(s,None)
             if f:
                 tok, obj = f(stack, tok, bIsTest=bIsTest )
@@ -167,7 +168,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         # Very similar to ParseFile above
         stack    = []
         tok      = self.GetNextToken()
-        sKeyword = string.upper(tok[1])
+        sKeyword = tok[1].upper()
         while sKeyword!="END":
             f = self.dKeyword2Func.get(sKeyword,None)
             if f:
@@ -182,7 +183,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
             else:
                 stack.append( (tok, self.scanner.GetLocation()) )
                 tok = self.GetNextToken()
-            sKeyword = string.upper(tok[1])
+            sKeyword = tok[1].upper()
         return tok, None
     # --------------------------------------------------------------------------
     # Parses the arguments of a subroutine or function. Parameters:
@@ -223,16 +224,16 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
                                        nIndentModifier=1)
         except:
             self.bErrorDuringParsing = 1
-            print "Error while parsing '%s'"%\
-                  self.sub.sGetName()
-            print "file:",self.scanner.GetFileLocation()
-            print self.scanner.GetCurrentLine()
+            print("Error while parsing '%s'"%self.sub.sGetName())
+            print("file:",self.scanner.GetFileLocation())
+            print(self.scanner.GetCurrentLine())
             excp, value, tb = sys.exc_info()
             print_exception(excp, value, tb)
             return None
         return tok
     # --------------------------------------------------------------------------
     def ParseSubroutine(self, stack, tok, bIsTest=0, bIsContained=0):
+        print("GOT SUB")
         self.sub = Subroutine()
         # First append each non-real statements to the subroutine:
         if stack:
@@ -281,7 +282,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         tok = self.ParseArguments(self.GetNextToken(), subStatement)
         if tok[1]==",":
             # Following now: BIND ( C [ , NAME = scalar-char-initialization-expr ] )
-            print "language-binding-spec currently not supported"
+            print("language-binding-spec currently not supported")
             return
         assert tok[0]==Token.tok_SEPARATOR
         if bIsTest:
@@ -304,8 +305,8 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         loc = self.scanner.GetLocation()
         stack = []
         sType = None
-        while string.upper(tok[1])!="FUNCTION":
-            sKeyword = string.upper(tok[1])
+        while tok[1].upper()!="FUNCTION":
+            sKeyword = tok[1].upper()
             if sKeyword=="RECURSIVE" or sKeyword=="ELEMENTAL" or \
                sKeyword=="PURE":
                 stack.append(tok[1])
@@ -341,9 +342,9 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
         tok = self.ParseArguments(self.GetNextToken(), funcStatement)
         if tok[1]==",":
             # Following now: BIND ( C [ , NAME = scalar-char-initialization-expr ] )
-            print "language-binding-spec currently not supported"
+            print("language-binding-spec currently not supported")
             return
-        if string.upper(tok[1])=="RESULT":
+        if tok[1].upper()=="RESULT":
             funcStatement.SetResult(tok[1], self.GetNextToken()[1],
                                     self.GetNextToken()[1],
                                     self.GetNextToken()[1])
@@ -389,7 +390,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
             loc = stack[0][1]
         else:
             loc = self.scanner.GetLocation()
-        if string.upper(tok[1])=='BLOCK':
+        if tok[1].upper()=='BLOCK':
             sBlock = tok[1]
             sData = self.GetNextToken()[1]
         else:
@@ -441,7 +442,7 @@ class ParserClass(ParseSpecification, ParseExp, ParseExecution):
 #        tok = self.GetNextToken()
         return self.GetNextToken(), self.sub
         if tok[0]!=Token.tok_SEPARATOR:
-            if string.upper(tok[1])=='BLOCK':
+            if tok[1].upper()=='BLOCK':
                 sBlock = tok[1]
                 sData = self.GetNextToken()[1]
             else:
@@ -491,10 +492,10 @@ def Parser(sFilename=None, sInput=None, lInputLines=None,
     return p.GetFileObject()
 # ==============================================================================
 def usage():
-    print "Usage: Parser.py [-P] [-i] <list of files>"
-    print
-    print "-P: Profile"
-    print "-i: Generate interface"
+    print("Usage: Parser.py [-P] [-i] <list of files>")
+    print()
+    print("-P: Profile")
+    print("-i: Generate interface")
 # ------------------------------------    
 if __name__=="__main__":
 
@@ -525,7 +526,7 @@ if __name__=="__main__":
             if bDoPrint:
                 from Stylesheets.f77 import f77
                 s = f77()
-                print s.ToString(objFile)
+                print(s.ToString(objFile))
 
             if bInterface:
                 from Analyser.Interface import GenerateInterface
@@ -533,8 +534,8 @@ if __name__=="__main__":
                 ssheet = f77()
                 ssheet['keywordcase']='upper'
                 for i in objFile.GetAllProgUnits(Subroutine):
-                    print ssheet.ToString(GenerateInterface(i, ssheet),
-                                          bIgnoreAttributes=1)
+                    print(ssheet.ToString(GenerateInterface(i, ssheet),
+                                          bIgnoreAttributes=1))
     else:
         import profile
         profile.run(

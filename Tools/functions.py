@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-import string
-from   types           import ListType
-
 # ------------------------------------------------------------------------------
 # Creates a flattened list of a list of list of ...
 def flatten(l):
-    if type(l) != ListType: return [l]
+    if type(l) != type([]): return [l]
     lResult = []
     for i in l:
         lResult.extend(flatten(i))
@@ -36,7 +33,7 @@ for i in lAllIntrinsics:
     
 # Returns 1 if the string in s is an intrinsic function.
 def bIsIntrinsic(s):
-    s = string.lower(s)
+    s = s.lower()
     return dAllIntrinsics.get(s, 0)
 
             

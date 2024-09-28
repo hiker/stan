@@ -44,7 +44,7 @@ class f77(DefaultStylesheet):
             # The first element has attributes (i.e. there is a label and any
             # attributes before):
             for i in l[0].GetPrefixAttributes():
-                lLines.append(`i`)
+                lLines.append(str(i))
             lStartStatement=[" "*(self['startcolumn']-1), l[1]]
             
         lCurr.extend(l[0:2])
@@ -93,7 +93,7 @@ class f77(DefaultStylesheet):
                         lLines.append(lCurr)
                     lCurr= Layout2d()
                     lCurr.indent(self['startcolumn']-2)
-                    lCurr.append(`j`)
+                    lCurr.append(str(j))
                     lCurr.extend([lStartStatement[1],s])
                     nCurrentColumn = self['startcolumn']-1 +\
                                      len(lStartStatement[1])+len(s)
@@ -102,7 +102,7 @@ class f77(DefaultStylesheet):
                     if bIsFirst:
                         lLines.append(lCurr)
                     bIsFirst = 0
-                    lLines.append(`j`)
+                    lLines.append(str(j))
                     lCurr = Layout2d()
             else:
                 # This is not executed if a ContMarker was added. This basically
@@ -135,9 +135,9 @@ class f77(DefaultStylesheet):
             for j in lPostfix:
                 if j.__class__==Comment:
                     lCurr.extend([' '*(j.GetLocation()[1]-nCurrentColumn-1),
-                                       `j`])
+                                       str(j)])
                 else:
-                    lCurr.append([' %s'%`j`])  # Add at least one space here
+                    lCurr.append([' %s'%str(j)])  # Add at least one space here
         lLines.append(lCurr)
         return lLines
     # --------------------------------------------------------------------------

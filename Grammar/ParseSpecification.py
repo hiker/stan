@@ -291,7 +291,7 @@ class ParseSpecification:
             return self.ParseAssignment(tokImplicit, loc=loc, sLabel=sLabel,
                                         sName=sName)
         impl = Implicit(tokImplicit[1], loc=loc, nIndent=self.nIndent)
-        if string.upper(tok[1])=="NONE":
+        if tok[1].upper()=="NONE":
             impl.SetImplicitNone(tok[1])
             tok = self.GetNextToken()
         else:
@@ -386,7 +386,7 @@ class ParseSpecification:
         iface = InterfaceStatement(loc, sInterface=tok[1])
         tok = self.GetNextToken()
         if tok[0]!=Token.tok_SEPARATOR:
-            if string.upper(tok[1])=="OPERATOR":
+            if tok[1].upper()=="OPERATOR":
                 while tok[0]!=Token.tok_SEPARATOR:
                     iface.AddGenericSpec(tok[1])
                     tok = self.GetNextToken()
@@ -461,7 +461,7 @@ class ParseSpecification:
     # --------------------------------------------------------------------------
     # procedure-stmt is [ MODULE ] PROCEDURE procedure-name-list
     def ParseModuleProcedure(self, tok, loc, sLabel=None, sName=None):
-        if string.upper(tok[1])=="MODULE":
+        if tok[1].upper()=="MODULE":
             proc = ModuleProcedure(loc, tok[1], self.GetNextToken()[1],
                                    self.nIndent)
         else:
@@ -547,7 +547,7 @@ class ParseSpecification:
             
     # --------------------------------------------------------------------------
     def ParsePublicPrivate(self, tokKeyword, loc, sLabel=None, sName=None):
-        sKeyword = string.upper(tokKeyword[1])
+        sKeyword = tokKeyword[1].upper()
         tok  = self.GetNextToken()
         if sKeyword=="PRIVATE":
             obj = Private(loc, tokKeyword[1], self.nIndent)
@@ -663,7 +663,7 @@ class ParseSpecification:
         # now loop for attributes
         while tokComma[1]==",":
             tok  = self.GetNextToken()
-            sAtt = string.upper(tok[1])
+            sAtt = tok[1].upper()
             if sAtt=="DIMENSION":
                 tok2=self.GetNextToken()
                 tokComma,att = self.ParseArraySpec(sName=tok[1],
@@ -773,7 +773,7 @@ class ParseSpecification:
         use.AddComma(tokComma[1])
         # Now we have either an only or an rename use statement
         tok=self.GetNextToken()
-        if string.upper(tok[1])=="ONLY":
+        if tok[1].upper()=="ONLY":
             use.AddOnlyString(tok[1], self.GetNextToken()[1])
             while 1:
                 tok      = self.GetNextToken()
@@ -789,7 +789,7 @@ class ParseSpecification:
         else:
             tokFrom = tok
             while 1:
-                if string.upper(tokFrom[1])=="OPERATOR":
+                if tokFrom[1].uppe()=="OPERATOR":
                     raise NotYetImplemented("Renaming Operators", self.scanner)
                 tokArrow = self.GetNextToken()
                 assert tokArrow[1]=="=>"
@@ -861,7 +861,7 @@ class ParseSpecification:
     # a type object. Important thing here is to handle 'doubleprecision' (or
     # 'double precision') correctly. It will not parse any kind information!
     def ParseBasicType(self, tok):
-        sType = string.upper(tok[1])
+        sType = tok[1].upper()
         if sType=='DOUBLEPRECISION':
             if isinstance(tok[1], AttributeString):
                 s1, s2 = tok[1].tSplitString(6)
@@ -908,7 +908,7 @@ class ParseSpecification:
         type.SetParOpen(tok[1])
         while tok[1]!=')':
             tok = self.GetNextToken()
-            s = string.upper(tok[1])
+            s = tok[1].upper()
             if s=='KIND' or s=='LEN':
                 sKindOrLen = tok[1]
                 sEqual = self.GetNextToken()[1]

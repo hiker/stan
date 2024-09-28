@@ -29,15 +29,15 @@ def RunAllTests():
 # ==============================================================================
 
 def usage():
-    print "Usage: Parser.py [-o] [-i] [-c] [-T] [-P] <list of files>"
-    print
-    print "-o: Print the file"
-    print "-i: Generate interface"
-    print "-c: Generate calltree"
-    print "-T: Run unit tests (no filename required). For more detailed"
-    print "    options use Grammar/RunAllTests directly. You can then"
-    print "    increase the verbosity by adding '-v's or '-v 4'"
-    print "-P: A run with the python profiler"
+    print( "Usage: Parser.py [-o] [-i] [-c] [-T] [-P] <list of files>")
+    print()
+    print( "-o: print( the file")
+    print( "-i: Generate interface")
+    print( "-c: Generate calltree")
+    print( "-T: Run unit tests (no filename required). For more detailed")
+    print( "    options use Grammar/RunAllTests directly. You can then")
+    print( "    increase the verbosity by adding '-v's or '-v 4'")
+    print( "-P: A run with the python profiler")
     
 # ------------------------------------    
 if __name__=="__main__":
@@ -74,16 +74,16 @@ if __name__=="__main__":
         for i in lArgs:
             objFile = project.oGetObjectForIdentifier(i, "file")
             if bDoPrint:
-                print ssheet.ToString(objFile)
+                print(ssheet.ToString(objFile))
             if bInterface:
                 from Analyser.Interface import GenerateInterface
                 from Stylesheets.f77    import f77
                 ssheet = f77()
                 for i in objFile.GetAllSubroutines():
-                    print GenerateInterface(i, ssheet)
+                    print(GenerateInterface(i, ssheet))
             if bCallTree:
                 from Analyser.CallTree import GenerateFileCallTree
-                print GenerateFileCallTree(objFile,i)
+                print(GenerateFileCallTree(objFile,i))
     else:
         import profile
         profile.run(

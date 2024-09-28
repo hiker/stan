@@ -11,8 +11,6 @@
 # The token for 'do' would contain the prefix attribute
 # CompilerDirectice("!cdir concur")
 
-from types        import ListType
-
 class AttributeString(str):
     def __init__(self, s):
         str.__init__(self, s)
@@ -48,13 +46,13 @@ class AttributeString(str):
     def SetPostfixAttributes(self, l) : self.lPostfix = l[:]
     # --------------------------------------------------------------------------
     def AppendPrefix(self,  o):
-        if type(o)==ListType:
+        if type(o)==type([]):
             self.lPrefix.extend(o)
         else:
             self.lPrefix.append(o)
     # --------------------------------------------------------------------------
     def AppendPostfix(self, o):
-        if type(o)==ListType:
+        if type(o)==type([]):
             self.lPostfix.extend(o)
         else:
             self.lPostfix.append(o)
@@ -86,5 +84,4 @@ class AttributeString(str):
     #def __repr__(self): return str.__str__(self)
     # Debug: output an attribute string with all attributes
     def __repr__(self):
-        return "%s-%s-%s"%(`self.lPrefix`,str.__str__(self),`self.lPostfix`)
-
+        return f"{self.lPrefix}-{self}-{self.lPostfix}"

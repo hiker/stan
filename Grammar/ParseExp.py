@@ -60,7 +60,7 @@ class ParseExp:
         (tok, obj) = SubExpressionParser(tok)
         if not tok:
             return (tok, obj)
-        s = string.upper(tok[1])
+        s = tok[1].upper()
         if not (s in lOps):
             return (tok, obj)
         ExpObj = classExpression()
@@ -72,7 +72,7 @@ class ParseExp:
             if not tok:
                 ExpObj.append(obj)
                 return (tok, ExpObj)
-            s = string.upper(tok[1])
+            s = tok[1].upper()
             if not (s in lOps):
                 ExpObj.append(obj)
                 return (tok, ExpObj)
@@ -96,7 +96,7 @@ class ParseExp:
     # and-operand is [ .NOT. ] level-4-expr
     def AndOperand(self, tok):
         sNot = tok[1]
-        s = string.upper(sNot)
+        s = sNot.upper()
         if s==".NOT.":
             (tok, obj) = self.Level4Expr(self.GetNextToken())
             return (tok, UnaryExpression(sNot, obj))

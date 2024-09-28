@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-import string
-from   UserDict              import UserDict
-from   types                 import TupleType, StringType, ListType
-from   AOR.Expression        import ArraySpec, ArraySpecWithName
 from   AOR.Declaration       import Intent, Use, Declaration, VariableWithInit
 from   AOR.SpecialStatements import PreDirective
 
@@ -41,7 +37,7 @@ from   AOR.SpecialStatements import PreDirective
 #       classe with a dict as a baseclass.
 
 # ==============================================================================
-class VariableData(UserDict):
+class VariableData(dict):
 
     # Stores information about a variable. This object is a dictionary itself,
     # so the attributes of a variable can be accessed via [] etc. Only one
@@ -77,13 +73,13 @@ class VariableData(UserDict):
     
     def __init__(self, sName, dType=None):
         if not dType: dType={}
-        UserDict.__init__(self, dType)
+        super().__init__(dType)
         self.sName = sName
     # --------------------------------------------------------------------------
     # Overwrite the default, so that no excpetion is raised for
     # non existing attributes
     def __getitem__(self, key):
-        return self.data.get(key, None)
+        return super().get(key, None)
     # --------------------------------------------------------------------------
     # Returns the current name of the variable (the current name is either the
     # original one or a renamed one.
@@ -123,6 +119,7 @@ class VariableData(UserDict):
         # attribute is actually an ArraySpec, so we have to create a
         # new ArraySpecWithName object here).
         if self['dimension']:
+            from AOR.Expression import ArraySpecWithName
             l.extend([ArraySpecWithName(sName='dimension',
                                         arrayspec=self['dimension']), ','])
         # The value of 'intent' is actually an object, which can be used
@@ -223,12 +220,12 @@ class VariableData(UserDict):
     def GetDimensionAsString(self):
         dim=self.get('dimension',None)
         if not dim: return ""
-        return `dim`
+        return str(dim)
         
     # --------------------------------------------------------------------------
     # Displays the variable name and all attributes
     def DisplayAll(self):
-        return '%s[%s]'%(self.sName, UserDict.__repr__(self))
+        return '%s[%s]'%(self.sName, super.__repr__())
     # --------------------------------------------------------------------------
     def ToList(self, stylesheet, l): l.append(stylesheet.sVariable(self.sName))
     # --------------------------------------------------------------------------
@@ -317,7 +314,7 @@ class Variable:
     # --------------------------------------------------------------------------
     def ToList(self, stylesheet, l):
         sCurrentName = self.oVarData.sGetName()
-        if string.lower(sCurrentName)==string.lower(self.sName):
+        if sCurrentName.lower()==self.sName.lower():
             l.append(stylesheet.sVariable(self.sName))
             return
         # The variable has been renamed. If the current name is a normal string,
@@ -337,6 +334,6 @@ class Variable:
 
 # ==============================================================================
 
-if __name__=="__main__":
-    from AOR.Test.VariableTest import RunTest
-    RunTest()
+#if __name__=="__main__":
+#    from AOR.Test.VariableTest import RunTest
+#    RunTest()
